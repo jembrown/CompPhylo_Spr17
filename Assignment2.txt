@@ -1,0 +1,100 @@
+***** Sampling from a Discrete Distribution (2a) *****
+
+(1) Write a function that multiplies all consecutively decreasing numbers between a maximum and a minimum supplied as arguments. (Like a factorial, but not necessarily going all the way to 1). This calculation would look like
+
+max * max-1 * max-2 * ... * min
+
+(2) Using the function you wrote in (1), write a function that calculates the binomial coefficient (see Definition 1.4.12 in the probability reading). Actually, do this twice. The first time (2a) calculate all factorials fully. Now re-write the function and cancel as many terms as possible so you can avoid unnecessary multiplication (see the middle expression in Theorem 1.4.13).
+
+(3) Try calculating different binomial coefficients using both the functions from (2a) and (2b) for different values of n and k. Try some really big values there is a noticeable difference in speed between the (2a) and (2b) function. Which one is faster? By roughly how much?
+
+(4) Use either function (2a) or (2b) to write a function that calculates the probability of k successes in n Bernoulli trials with probability p. This is the probability mass function (pmf) for the Binomial(n,p) distribution. See Theorem 3.3.5 for the necessary equation. [Hint: pow(x,y) returns x^y (x raised to the power of y).]
+
+(5) Now write a function to sample from an arbitrary discrete distribution. This function should take two arguments. The first is a list of arbitrarily labeled events and the second is a list of probabilities associated with these events. Obviously, these two lists should be the same length.
+
+--> Try to finish this by Tues., Jan. 31st <--
+
+***** End 2a *****
+
+
+
+***** Biological Lagniappe (OPTIONAL) *****
+
+---> Sampling sites from an alignment (bootstrapping) <---
+
+Imagine that you have a multiple sequence alignment with two kinds of sites. One type of site pattern supports the monophyly of taxon A and taxon B. The second type supports the monophyly of taxon A and taxon C.
+
+(6) For an alignment of 400 sites, with 200 sites of type 1 and 200 of type 2, sample a new alignment (a new set of site pattern counts) with replacement from the original using your function from (5). Print out the counts of the two types.
+
+(7) Repeat (6) 100 times and store the results in a list.
+
+(8) Of those 100 trials, summarize how often you saw particular proportions of type 1 vs. type 2. 
+
+(9) Calculate the probabilities of the proportions you saw in (8) using the binomial probability mass function (PMF) from (4).
+
+(10) Compare your results from (8) and (9).
+
+(11) Repeat 7-10, but use 10,000 trials.
+
+***** End Lagniappe *****
+
+
+
+Now you get to write some code on your own to do two things:
+
+(1) Climb up a likelihood surface and return the value of the parameter that maximizes the likelihood (i.e., the maximum likelihood or ML value).
+
+(2) Create and conduct a simulation to determine the ratio of likelihoods between an ML and true parameter values. Due to the variation inherent to a stochastic process, the ML value is often not the same as the true parameter value. It is useful to know how much smaller we might expect the likelihood of the true value to be.
+
+***** ML Hill Climber (2b) *****
+
+Sometimes it will not be feasible or efficient to calculate the likelihoods for every value of a parameter in which we're interested. Also, that approach can lead to large gaps between relevant values of the parameter. Instead, we'd like to have a 'hill climbing' function that starts with some arbitrary value of the parameter and finds values with progressively better likelihood scores. This is an ML optimization function. There has been a lot of work on the best way to do this. We're going to try a fairly simple approach that should still work pretty well, as long as our likelihood surface is unimodal (has just one peak). Our algorithm will be:
+
+1. Calculate the likelihood for our starting parameter value (we'll call this pCurr)
+
+2. Calculate likelihoods for the two parameter values above (pUp) and below (pDown) our current value by some amount (diff). So, pUp = pCurr + diff and pDown = pCurr - diff. To start, set diff=0.1, although it would be nice to allow this initial value to be set as an argument of our optimization function.
+
+3. If either pUp or pDown has a better likelihood than pCurr, change pCurr to this value. Then repeat (1)-(3) until pCurr has a higher likelihood than both pUp and pDown.
+
+4. Once L(pCurr) > L(pUp) and L(pCurr) > L(pDown), reduce diff by 1/2. Then repeat (1)-(3).
+
+5. Repeat (1)-(4) until diff is less than some threshold (say, 0.001).
+
+6. Return the final optimized parameter value.
+
+Write a function that takes some starting p value and observed data (k,n) for a binomial as its arguments and returns the ML value for p. To write this function, you will probably want to use while loops. The structure of these loops is
+
+while (someCondition):
+	code line 1 inside loop
+	code line 2 inside loop
+    
+As long as the condition remains True, the loop will continue executing. If the condition isn't met (someCondition == False) when the loop is first encountered, the code inside will never execute.
+
+If you understand recursion, you can use it to save some lines in this code, but it's not necessary to create a working function.
+
+***** End 2b *****
+
+
+***** Simulation of Likelihood Ratio Cutoff (2c) *****
+
+For the in-class discussion of likelihood ratios (LRs), you thought about an intuitive cutoff for LR scores that would suggest a value of p had a likelihood too low to reasonably be considered. Now, we will empirically determine one way to construct such a cutoff. To do so, we will ask how far away from the true value of a parameter the ML estimate might stray. Use this procedure:
+
+1. Start with a known value for p.
+
+2. Simulate at least 100 datasets.
+
+3. Find ML parameter estimates of p for each simulation, using the hill climber function you wrote above.
+
+4. Calculate likelihood ratios comparing the true p to ML estimates.
+
+By following this procedure, you will be constructing a null distribution of LRs that might be expected if the value of p you picked in (1) was true. Note that the ML values for these replicates are almost always greater than L(true value).
+
+Once you have this distribution, find the likelihood ratio cutoff you need to ensure that the probability of seeing an LR score that big or greater is <= 5%. 
+
+***** End 2c *****
+
+COMPLETE ALL OF ASSIGNMENT 2 (OTHER THAN LAGNIAPPE) BY MON., FEB. 6TH
+
+
+
+
