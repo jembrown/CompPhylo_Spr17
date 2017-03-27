@@ -1,0 +1,202 @@
+Assignment 4 Outline
+
+Part 1: Define a Markov chain class
+	- Start with a discrete-state, discrete-time chain
+	- Be able to run multiple replicates
+	- Be able to summarize frequencies of states across replicates for particular iterations
+	- Be able to calculate the probability of a set of states
+		- Going forward
+		- Going backward
+		
+Part 2: Extend (or define a new) class for discrete-state, continuous-time chains
+	- Be able to simulate waiting times and draws of new states
+	- If you know stationary frequencies, be able to normalize Q-matrix
+		- i.e., weighted average of diagonal entries is 1
+	- Be able to calculate the probability of a sequence of changes
+		- Going forward
+		- Going backward
+		
+Part 3: Simulate DNA evolution along a branch under Jukes-Cantor
+	- Define a discrete-state (4 nucleotides), continuous-time chain
+	- Be sure to normalize Q-matrix (equal nucleotide frequencies)
+	- Draw a list of starting nucleotides
+	- For each one, simulate evolution along a branch of given length
+		- Store character states and waiting times for these simulations
+	
+Part 4: Generalize the Jukes-Cantor model to simulate under GTR. Verify that the simulation
+	is working properly by:
+	- Comparing forward and reverse probabilities for simulated histories
+	- Simulate along very long branches to ensure that state frequencies match expectations
+	- Compare the average number of changes to the expected branch length
+	
+-----------------------------------------------------------------------------------------
+
+Here is an outline of a Markov chain class that can be used to begin Part 1:
+
+"""
+We will need to draw random numbers (using random) and we will need to use
+some special functions for matrices (using numpy).
+"""
+import random
+import numpy
+
+class MarkovChain(object):
+    """
+    A discrete-state, discrete-time Markov chain.
+    """
+    def __init__(self,[FILL IN VARIABLES HERE, PROVIDE DEFAULTS]):
+        """
+        Initializing variables that are necessary for simulating a discrete-time Markov chain:
+            - state space
+            - Q-matrix (transition matrix)
+            - number of iterations
+            - number of chains
+            - list of simulated states (or list of lists for >1 chain)
+        """
+        self. =     # state space
+        self. =     # Q-matrix
+        self. =     # number of iterations
+        self. =     # number of chains
+        self. =     # list of lists to hold simulated chains
+                    
+    def discSamp(self,states=[],probs=[]):
+        """
+        Samples from an arbitrary discrete distribution.
+        States and probs lists must be equal in length. Probs must sum to 1.
+        """
+        r = random.random()
+        cumulProb = 0
+        index = 0
+        for p in probs:
+            cumulProb = cumulProb + p
+            if r < cumulProb:
+                return states[index]
+            index += 1
+        print("ERROR: Probabilities did not add to 1!")
+
+    def run(self,startState=[SPECIFY DEFAULT HERE]):
+        """
+        Method to simulate the states sampled by a Markov chain.
+        """
+        
+        # Reset chains here to empty list of lists
+        
+        
+        # For loop across chains (we'll simulate chains one at a time)
+        for :
+            
+            # Initialize this chain to an empty list
+            self.
+            
+            # Add starting state to this chain
+            self.
+            
+            # For loop across iterations for this chain
+            for :
+                
+                # Draw the next state using the discSamp function. This function
+                # takes two arguments:
+                #   (1) The list of possible states
+                #   (2) The row of probabilities from the Q-matrix, 
+                #       conditioned on the current state.
+                state = self.discSamp(PROVIDE TWO ARGUMENTS)
+                
+                # Add the new state to this chain.
+                self.[SPECIFY CHAIN].append(SPECIFY STATE)
+        
+    def showChain(self,[FILL IN VARIABLES HERE, PROVIDE DEFAULTS]):
+        """
+        Method to simply print out the states sampled by a chain. Provide
+        ability to print a particular iteration of a chain or the whole chain.
+        """
+        if [CONDITION TO PRINT ENTIRE CHAIN]:
+            # Print out entire chain
+            print(self.[SPECIFY PARTICULAR CHAIN])
+            
+        elif [SPECIFIC CHAIN AND ITERATION PROVIDED]:
+            # Print just that iteration in that chain
+            print(self.[SPECIFY BOTH CHAIN AND ITERATION])
+            
+    def stateFreqs(self,state=[SPECIFY STATE],start=[1st ITERATION],end=[LAST ITERATION]):
+        """
+        Method to calculate and print the frequencies of a particular state
+        across chains.
+        """
+        if end is None:
+            # By default, set end to last iteration
+            end = 
+            
+        # Initialize list of frequencies
+        freqs = []
+        
+        # For loop from start iteration to end iteration
+        for :
+            # Initialize variable to hold counts of state across chains
+            count = 0
+            
+            # For loop across chains
+            for :
+                
+                # Check if the current state is the state of interest
+                if   ==   :
+                    # If so, add to the count
+                    count += 1
+                    
+            # Divide by total num of chains and add freq to list
+            freqs.append()
+            
+        # Print or return the list of frequencies
+        
+
+    def forwardProb(self,[FILL IN ARGUMENTS - WHICH CHAIN?]):
+        """
+        Calculate the probability of observing the full set of states 
+        simulated for a particular chain, assuming the chain went in a 
+        forward direction.
+        """
+        # Initialize the probability to 1.0
+        prob = 
+        
+        # For loop across iterations     
+        for :
+            # Find the index of the state for the current iteration (A)
+            
+            # Find the index of the state for the next iteration (B)
+            
+            # Multiply overall probability by P(B|A) using Q-matrix
+            prob *= 
+            
+        # Return the probability
+        return prob
+    
+    
+    def reverseProb(self,[FILL IN ARGUMENTS - WHICH CHAIN?]):
+        """
+        Calculate the probability of observing the full set of states 
+        simulated for a particular chain, assuming the chain went in a 
+        REVERSE direction.
+        
+        The code for this method is just like forwardProb, but your for
+        loop should run in reverse - from the end of the chain back to the
+        beginning.
+        """
+ 
+
+       
+    def margForwardProb(self,[FILL IN ARGUMENTS - WHICH CHAIN?]):
+        """
+        Calculate the MARGINAL probability of starting in one state and ending
+        in another, considering all possible intermediates.
+        """
+        # Raise your Q-matrix to the power of the number of iterations. You'll
+        # need numpy.linalg.matrix_power() for this.
+        
+        # Find the index of the starting state for the chain (S)
+        
+        # Find the index of the ending state for the chain (E)
+        
+        # Look up P(E|S) in the new matrix
+
+        # Return the relevant probability       
+        return 
+    
